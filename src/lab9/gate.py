@@ -40,11 +40,11 @@ def _check_ratchet(spec: dict, base_spec: dict) -> list[str]:
             problems.append(f"ratchet: blocking metric {mid} became non-blocking")
         bth = bm.get("threshold") or {}
         sth = sm.get("threshold") or {}
-        if "min" in bth and ("min" not in sth or sth["min"] < bth["min"]):
+        if "min" in bth and (sth.get("min") is None or sth["min"] < bth["min"]):
             problems.append(f"ratchet: metric {mid} min loosened ({sth.get('min')} < {bth['min']})")
-        if "max" in bth and ("max" not in sth or sth["max"] > bth["max"]):
+        if "max" in bth and (sth.get("max") is None or sth["max"] > bth["max"]):
             problems.append(f"ratchet: metric {mid} max loosened ({sth.get('max')} > {bth['max']})")
-        if "max_increase" in bth and ("max_increase" not in sth or sth["max_increase"] > bth["max_increase"]):
+        if "max_increase" in bth and (sth.get("max_increase") is None or sth["max_increase"] > bth["max_increase"]):
             problems.append(f"ratchet: metric {mid} max_increase loosened ({sth.get('max_increase')} > {bth['max_increase']})")
         if bth.get("no_significant_drop") and not sth.get("no_significant_drop"):
             problems.append(f"ratchet: metric {mid} dropped no_significant_drop")
@@ -58,9 +58,9 @@ def _check_ratchet(spec: dict, base_spec: dict) -> list[str]:
         ss = spec_slices[key]
         if bs.get("blocking") and not ss.get("blocking"):
             problems.append(f"ratchet: blocking slice {bs['name']}/{bs['metric']} became non-blocking")
-        if "min" in bs and ("min" not in ss or ss["min"] < bs["min"]):
+        if "min" in bs and (ss.get("min") is None or ss["min"] < bs["min"]):
             problems.append(f"ratchet: slice {bs['name']}/{bs['metric']} min loosened")
-        if "max" in bs and ("max" not in ss or ss["max"] > bs["max"]):
+        if "max" in bs and (ss.get("max") is None or ss["max"] > bs["max"]):
             problems.append(f"ratchet: slice {bs['name']}/{bs['metric']} max loosened")
         if bs.get("no_significant_drop") and not ss.get("no_significant_drop"):
             problems.append(f"ratchet: slice {bs['name']}/{bs['metric']} dropped no_significant_drop")

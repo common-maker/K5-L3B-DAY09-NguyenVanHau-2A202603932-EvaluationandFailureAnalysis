@@ -14,7 +14,7 @@ Lệnh in ra ba phần: các event trong trace (`reply`, `decision`, `model_over
 
 | Trường | Nội dung |
 |---|---|
-| Trial | `seeded_regression C-002@11`, run ID `E-seeded_regression-20261118-de4d` (`reports/eval_seeded_regression.json`) |
+| Trial | `seeded_regression C-002@11`, run ID `E-seeded_regression-20261118-4aa6` (`reports/eval_seeded_regression.json`) |
 | Triệu chứng | `lab8 grader` (`trial_pass`) FAIL (`status resolved != denied`), `refund_amount_correct` FAIL (`ledger=20000 != label=0`), `db_fact_kept` FAIL (`1 override event(s)`); reply gửi khách báo `"Dạ, LogiX đã hoàn 20.000đ cho đơn O-202."` trong khi nhãn đúng yêu cầu `denied` (`0đ`). |
 | Bước sai đầu tiên | Event `3` (`model_override`): `{"delay_days": 5}` — agent ghi đè giá trị `delay_days=5` trích từ ticket lên dữ kiện `delay_days=2` của DB. |
 | Vì sao là bước *đầu tiên* | Event `1` (`handoff`) giao đúng phạm vi `owner_order_only` và `allowed_tools`; Event `2` (`investigator`) truy vấn DB ra chính xác đơn `O-202` có `delay_days=2`, `shipping_fee_vnd=20000`. Mọi dữ kiện trước bước `3` đều chính xác; bước `3` làm sai đầu vào cho bước `4` (`quote`) khiến hệ thống tính nhầm mức bồi thường 20.000đ. |

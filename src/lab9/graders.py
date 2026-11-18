@@ -19,7 +19,7 @@ from pydantic_evals.evaluators import Evaluator, EvaluationReason, EvaluatorCont
 Trial = dict[str, Any]   # keys: result, snapshot, unexpected_rows, blob, lab8_pass, lab8_reason, events
 Label = dict[str, Any]
 
-_CURRENCY_RE = re.compile(r"(?<!\w)(\d{1,3}(?:[.,]\d{3})+|\d+)\s*(?:đ|₫|vnd|vnđ)(?!\w)", re.IGNORECASE)
+_CURRENCY_RE = re.compile(r"(?<!\w)(\d{1,3}(?:[.,]\d{3})+|\d+)\s*(?:đồng|đ|₫|vnđ|vnd)(?!\w)", re.IGNORECASE)
 _REFUND_VERB_RE = re.compile(r"hoàn(?:\s+(?:phí|tiền|lại))?\s+(\d{1,3}(?:[.,]\d{3})+|\d{4,})(?!\w)", re.IGNORECASE)
 
 
@@ -28,11 +28,15 @@ def _extract_reply_amounts(events: list[dict[str, Any]], result: dict[str, Any])
     texts: list[str] = []
     for ev in events:
         if ev.get("kind") == "reply":
-            text = (ev.get("payload") or {}).get("text")
-            if isinstance(text, str) and text:
-                texts.append(text)
-    if isinstance(result.get("reply"), str) and result["reply"]:
-        texts.append(result["reply"])
+            payload = ev.get("payload") or {}
+            for key in ("text", "message", "content", "reply"):
+                val = payload.get(key)
+                if isinstance(val, str) and val:
+                    texts.append(val)
+    for key in ("reply", "reply_text", "message"):
+        val = result.get(key)
+        if isinstance(val, str) and val:
+            texts.append(val)
     amounts: list[int] = []
     for text in texts:
         matches = _CURRENCY_RE.findall(text) or _REFUND_VERB_RE.findall(text)
